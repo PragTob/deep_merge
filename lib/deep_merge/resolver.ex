@@ -24,9 +24,7 @@ defimpl DeepMerge.Resolver, for: List do
     original
   end
   def resolver(_original, override), do: override
-
 end
-
 
 defimpl DeepMerge.Resolver, for: Any do
   def resolver(_original, override), do: override

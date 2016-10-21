@@ -15,4 +15,14 @@ defmodule DeepMergeTest do
     assert deep_merge([a: [b: []], f: 5], [a: [b: []]]) ==
            [f: 5, a: [b: []]]
   end
+
+  defmodule User do
+    defstruct [:attrs]
+  end
+
+  test "deep_merge/2 doesn't attempt to merge structs" do
+    original = %{a: %User{attrs: %{b: 1}}}
+    override = %{a: %User{attrs: %{c: 2}}}
+    assert deep_merge(original, override) == override
+  end
 end
