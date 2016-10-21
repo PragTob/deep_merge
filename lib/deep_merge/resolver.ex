@@ -17,17 +17,14 @@ end
 
 defimpl DeepMerge.Resolver, for: List do
   def resolver(original = [{_k, _v} | _tail], override = [{_, _} | _]) do
-    continue_deep_merge original, override
-  end
-  def resolver(original = [{_k, _v} | _tail], override = []) do
-    continue_deep_merge original, override
-  end
-  def resolver(_original, override), do: override
-
-  defp continue_deep_merge(original, override) do
     resolver = fn(_, orig, over) -> DeepMerge.Resolver.resolver(orig, over) end
     Keyword.merge(original, override, resolver)
   end
+  def resolver(original = [{_k, _v} | _tail], _override = []) do
+    original
+  end
+  def resolver(_original, override), do: override
+
 end
 
 
