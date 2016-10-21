@@ -25,4 +25,12 @@ defmodule DeepMergeTest do
     override = %{a: %User{attrs: %{c: 2}}}
     assert deep_merge(original, override) == override
   end
+
+  test "deep_merge/2 doesn't attempt to merge maps and structs" do
+    with_map    = %{a: %{attrs: %{b: 1}}}
+    with_struct = %{a: %User{attrs: %{c: 2}}}
+
+    assert deep_merge(with_map, with_struct) == with_struct
+    assert deep_merge(with_struct, with_map) == with_map
+  end
 end

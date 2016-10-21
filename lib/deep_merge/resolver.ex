@@ -8,6 +8,9 @@ defprotocol DeepMerge.Resolver do
 end
 
 defimpl DeepMerge.Resolver, for: Map do
+  def resolver(_original, override = %{__struct__: _}) do
+    override
+  end
   def resolver(original, override) when is_map(override) do
     resolver = fn(_, orig, over) -> DeepMerge.Resolver.resolver(orig, over) end
     Map.merge(original, override, resolver)
