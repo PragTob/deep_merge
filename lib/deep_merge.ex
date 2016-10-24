@@ -51,4 +51,20 @@ defmodule DeepMerge do
   def deep_merge(base, override) do
     DeepMerge.Resolver.resolve(base, override)
   end
+
+  @doc """
+
+  ## Examples
+
+      iex> resolver = fn
+      ...> (_key, original, override) when is_list(original) and is_list(override) ->
+      ...>   override
+      ...> (key, original, override) ->
+      ...>   DeepMerge.merge_me_synbol
+      ...> end
+      iex> DeepMerge.deep_merge()
+  """
+  def deep_merge(base, override, resolver) do
+
+  end
 end
