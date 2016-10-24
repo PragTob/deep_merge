@@ -31,6 +31,6 @@ defmodule DeepMerge do
       %{a: [b: %{c: [e: 2, d: "bar"]}]}
   """
   def deep_merge(base, override) do
-    DeepMerge.Resolver.resolver(base, override)
+    DeepMerge.Resolver.resolve(base, override)
   end
 end
