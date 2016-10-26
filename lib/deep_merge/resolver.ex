@@ -1,8 +1,34 @@
 defprotocol DeepMerge.Resolver do
+  @moduledoc """
+  Protocol defining how conflicts during a conflict should be resolved per type.
+  """
   @fallback_to_any true
 
   @doc """
-  Resolves what happens when this data types is going to be deep merged.
+  Resolves what happens when this data types is going to be deep merged and the
+  value for a paticular key already exists.
+
+  The passed in values are `original` the value in the original data structure,
+  usually left side argument, and `override` the value with which `original`
+  would be overridden in a normal `merge/2`.
+
+  An example implementation might look like this:
+
+  ```
+  defmodule MyStruct do
+    defstruct [:attrs]
+  end
+
+  defimpl DeepMerge.Resolver, for: MyStruct do
+    def resolve(original, override = %{__struct__: MyStruct}) do
+      resolver = fn(_, orig, over) -> DeepMerge.Resolver.resolve(orig, over) end
+      Map.merge(original, override, resolver)
+    end
+    def resolve(_, override) do
+      override
+    end
+  end
+  ```
   """
   def resolve(original, override)
 end
