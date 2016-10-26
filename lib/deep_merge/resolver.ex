@@ -30,31 +30,31 @@ defprotocol DeepMerge.Resolver do
   end
   ```
   """
-  def resolve(original, override)
+  def resolve(original, override, fun)
 end
 
 defimpl DeepMerge.Resolver, for: Map do
-  def resolve(_original, override = %{__struct__: _}) do
+  def resolve(_original, override = %{__struct__: _}, _fun) do
     override
   end
-  def resolve(original, override) when is_map(override) do
-    resolver = fn(_, orig, over) -> DeepMerge.Resolver.resolve(orig, over) end
+  def resolve(original, override, fun) when is_map(override) do
+    resolver = fn(_, orig, over) -> DeepMerge.deep_merge(orig, over, fun) end
     Map.merge(original, override, resolver)
   end
-  def resolve(_original, override), do: override
+  def resolve(_original, override, _fun), do: override
 end
 
 defimpl DeepMerge.Resolver, for: List do
-  def resolve(original = [{_k, _v} | _tail], override = [{_, _} | _]) do
-    resolver = fn(_, orig, over) -> DeepMerge.Resolver.resolve(orig, over) end
+  def resolve(original = [{_k, _v} | _tail], override = [{_, _} | _], fun) do
+    resolver = fn(_, orig, over) -> DeepMerge.deep_merge(orig, over, fun) end
     Keyword.merge(original, override, resolver)
   end
-  def resolve(original = [{_k, _v} | _tail], _override = []) do
+  def resolve(original = [{_k, _v} | _tail], _override = [], _fun) do
     original
   end
-  def resolve(_original, override), do: override
+  def resolve(_original, override, _fun), do: override
 end
 
 defimpl DeepMerge.Resolver, for: Any do
-  def resolve(_original, override), do: override
+  def resolve(_original, override, _fun), do: override
 end
