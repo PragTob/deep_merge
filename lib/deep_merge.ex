@@ -76,5 +76,14 @@ defmodule DeepMerge do
     end
   end
 
+  @doc """
+  The symbol to return in the function in `deep_merge/3` when deep merging
+  should continue as normal.
+
+  ## Examples
+
+      iex> DeepMerge.continue_deep_merge
+      :deep_merge_continue
+  """
   def continue_deep_merge, do: @continue_symbol
 end
