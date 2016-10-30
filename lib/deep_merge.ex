@@ -7,7 +7,6 @@ defmodule DeepMerge do
   please have a look at the `DeepMerge.Resolver` protocol.
   """
 
-  @continue_symbol :deep_merge_continue
 
   @doc """
   Deeply merges two maps or keyword list, meaning that if two conflicting values
@@ -51,7 +50,10 @@ defmodule DeepMerge do
       %{a: [b: %{c: [e: 2, d: "bar"]}]}
   """
   def deep_merge(base, override) do
-    DeepMerge.Resolver.resolve(base, override, fn(_, _) -> @continue_symbol end)
+    continue_symbol = DeepMerge.Integration.continue_deep_merge
+    DeepMerge.Resolver.resolve(base,
+                               override,
+                               fn(_, _, _) ->  continue_symbol end)
   end
 
   @doc """
@@ -59,31 +61,16 @@ defmodule DeepMerge do
   ## Examples
 
       iex> resolver = fn
-      ...> (original, override) when is_list(original) and is_list(override) ->
+      ...> (_, original, override) when is_list(original) and is_list(override) ->
       ...>   override
-      ...> (_original, _override) ->
-      ...>   DeepMerge.continue_deep_merge
+      ...> (_, _original, _override) ->
+      ...>   DeepMerge.Integration.continue_deep_merge
       ...> end
       iex> DeepMerge.deep_merge(%{a: %{b: 1}, c: [d: 1]},
       ...> %{a: %{z: 5}, c: [x: 0]}, resolver)
       %{a: %{b: 1, z: 5}, c: [x: 0]}
   """
   def deep_merge(base, override, resolve_function) do
-    resolved_value = resolve_function.(base, override)
-    case resolved_value do
-      @continue_symbol -> DeepMerge.Resolver.resolve(base, override, resolve_function)
-      _                -> resolved_value
-    end
+    DeepMerge.Integration.do_deep_merge(nil, base, override, resolve_function)
   end
-
-  @doc """
-  The symbol to return in the function in `deep_merge/3` when deep merging
-  should continue as normal.
-
-  ## Examples
-
-      iex> DeepMerge.continue_deep_merge
-      :deep_merge_continue
-  """
-  def continue_deep_merge, do: @continue_symbol
 end

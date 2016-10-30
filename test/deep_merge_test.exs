@@ -56,10 +56,10 @@ defmodule DeepMergeTest do
 
   def kwlist_avoider do
     fn
-    (original, override) when is_list(original) and is_list(override) ->
+    (_, original, override) when is_list(original) and is_list(override) ->
      override
-    (_original, _override) ->
-     DeepMerge.continue_deep_merge
+    (_, _original, _override) ->
+     DeepMerge.Integration.continue_deep_merge
     end
   end
 
@@ -74,13 +74,13 @@ defmodule DeepMergeTest do
 
   def number_adder do
     fn
-    (original, override) when is_number(original) and is_number(override) ->
+    (_, original, override) when is_number(original) and is_number(override) ->
      original + override
-    (_original, _override) ->
-     DeepMerge.continue_deep_merge
+    (_, _original, _override) ->
+     DeepMerge.Integration.continue_deep_merge
     end
   end
-  test "optional function can be used to add numbers if desired" do
+  test "deep_merge/3 optional function can be used to add numbers if desired" do
     assert deep_merge(%{a: 1, b: [c: 2]},
                       %{a: -1, b: [c: 5, d: 1], e: ""},
                       number_adder) == %{a: 0, b: [c: 7, d: 1], e: ""}
