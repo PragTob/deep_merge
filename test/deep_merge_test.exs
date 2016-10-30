@@ -53,4 +53,36 @@ defmodule DeepMergeTest do
     assert deep_merge(with_map, with_struct) == with_struct
     assert deep_merge(with_struct, with_map) == with_map
   end
+
+  def kwlist_avoider do
+    fn
+    (original, override) when is_list(original) and is_list(override) ->
+     override
+    (_original, _override) ->
+     DeepMerge.continue_deep_merge
+    end
+  end
+
+  test "deep_merge/3 can successfully avoid marging kwlists" do
+    assert deep_merge([a: :b], [c: :d], kwlist_avoider) == [c: :d]
+    assert deep_merge(%{a: :b}, %{c: :d}, kwlist_avoider) == %{a: :b, c: :d}
+    base = %{a: [b: 1], c: %{d: 1, e: %{f: 2}}}
+    override = %{a: [c: 3], c: %{e: %{g: 10}}}
+    expected = %{a: [c: 3], c: %{d: 1, e: %{f: 2, g: 10}}}
+    assert deep_merge(base, override, kwlist_avoider) == expected
+  end
+
+  def number_adder do
+    fn
+    (original, override) when is_number(original) and is_number(override) ->
+     original + override
+    (_original, _override) ->
+     DeepMerge.continue_deep_merge
+    end
+  end
+  test "optional function can be used to add numbers if desired" do
+    assert deep_merge(%{a: 1, b: [c: 2]},
+                      %{a: -1, b: [c: 5, d: 1], e: ""},
+                      number_adder) == %{a: 0, b: [c: 7, d: 1], e: ""}
+  end
 end
