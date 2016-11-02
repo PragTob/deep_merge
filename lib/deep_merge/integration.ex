@@ -1,5 +1,5 @@
 defmodule DeepMerge.Integration do
-  @continue_symbol :deep_merge_continue
+  @continue_symbol :__deep_merge_continue
 
   def do_deep_merge(key, base, override, resolve_function) do
     resolved_value = resolve_function.(key, base, override)
@@ -24,7 +24,7 @@ defmodule DeepMerge.Integration do
   ## Examples
 
       iex> DeepMerge.Integration.continue_deep_merge
-      :deep_merge_continue
+      :__deep_merge_continue
   """
   def continue_deep_merge, do: @continue_symbol
 end
