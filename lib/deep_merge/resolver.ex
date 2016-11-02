@@ -37,16 +37,14 @@ defimpl DeepMerge.Resolver, for: Map do
   def resolve(_original, override = %{__struct__: _}, _fun) do
     override
   end
-  def resolve(original, override, fun) when is_map(override) do
-    resolver = DeepMerge.Integration.build_resolver(fun)
+  def resolve(original, override, resolver) when is_map(override) do
     Map.merge(original, override, resolver)
   end
   def resolve(_original, override, _fun), do: override
 end
 
 defimpl DeepMerge.Resolver, for: List do
-  def resolve(original = [{_k, _v} | _tail], override = [{_, _} | _], fun) do
-    resolver = DeepMerge.Integration.build_resolver(fun)
+  def resolve(original = [{_k, _v} | _], override = [{_, _} | _], resolver) do
     Keyword.merge(original, override, resolver)
   end
   def resolve(original = [{_k, _v} | _tail], _override = [], _fun) do

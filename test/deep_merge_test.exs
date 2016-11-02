@@ -59,7 +59,7 @@ defmodule DeepMergeTest do
     (_, original, override) when is_list(original) and is_list(override) ->
      override
     (_, _original, _override) ->
-     DeepMerge.Integration.continue_deep_merge
+     DeepMerge.continue_deep_merge
     end
   end
 
@@ -77,7 +77,7 @@ defmodule DeepMergeTest do
     (_, original, override) when is_number(original) and is_number(override) ->
      original + override
     (_, _original, _override) ->
-     DeepMerge.Integration.continue_deep_merge
+     DeepMerge.continue_deep_merge
     end
   end
   test "deep_merge/3 optional function can be used to add numbers if desired" do

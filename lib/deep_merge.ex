@@ -7,6 +7,7 @@ defmodule DeepMerge do
   please have a look at the `DeepMerge.Resolver` protocol.
   """
 
+  @continue_symbol :__deep_merge_continue
 
   @doc """
   Deeply merges two maps or keyword list, meaning that if two conflicting values
@@ -50,10 +51,7 @@ defmodule DeepMerge do
       %{a: [b: %{c: [e: 2, d: "bar"]}]}
   """
   def deep_merge(base, override) do
-    continue_symbol = DeepMerge.Integration.continue_deep_merge
-    DeepMerge.Resolver.resolve(base,
-                               override,
-                               fn(_, _, _) ->  continue_symbol end)
+    deep_merge base, override, fn(_, _, _) -> @continue_symbol end
   end
 
   @doc """
@@ -64,13 +62,52 @@ defmodule DeepMerge do
       ...> (_, original, override) when is_list(original) and is_list(override) ->
       ...>   override
       ...> (_, _original, _override) ->
-      ...>   DeepMerge.Integration.continue_deep_merge
+      ...>   DeepMerge.continue_deep_merge
       ...> end
       iex> DeepMerge.deep_merge(%{a: %{b: 1}, c: [d: 1]},
       ...> %{a: %{z: 5}, c: [x: 0]}, resolver)
       %{a: %{b: 1, z: 5}, c: [x: 0]}
   """
   def deep_merge(base, override, resolve_function) do
-    DeepMerge.Integration.do_deep_merge(nil, base, override, resolve_function)
+    resolver = build_resolver(resolve_function)
+    resolver.(nil, base, override)
   end
+
+
+  @doc """
+  The symbol to return in the function in `deep_merge/3` when deep merging
+  should continue as normal.
+
+  ## Examples
+
+      iex> DeepMerge.continue_deep_merge
+      :__deep_merge_continue
+  """
+  def continue_deep_merge, do: @continue_symbol
+
+  defp build_resolver(resolve_function) do
+    my_resolver = fn(key, base, override, fun) ->
+      resolved_value = resolve_function.(key, base, override)
+      case resolved_value do
+         @continue_symbol ->
+           continue_deep_merge(base, override, fun)
+        _anything ->
+          resolved_value
+      end
+    end
+
+    rebuild_resolver(my_resolver)
+  end
+
+  defp rebuild_resolver(resolve_function) do
+    fn(key, base, override) ->
+      resolve_function.(key, base, override, resolve_function)
+    end
+  end
+
+  defp continue_deep_merge(base, override, fun) do
+    resolver = rebuild_resolver(fun)
+    DeepMerge.Resolver.resolve(base, override, resolver)
+  end
+
 end
