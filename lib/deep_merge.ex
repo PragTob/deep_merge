@@ -54,8 +54,8 @@ defmodule DeepMerge do
       iex> DeepMerge.deep_merge(%{a: [b: %{c: [d: "foo", e: 2]}]}, %{a: [b: %{c: [d: "bar"]}]})
       %{a: [b: %{c: [e: 2, d: "bar"]}]}
   """
-  def deep_merge(base, override) do
-    deep_merge base, override, fn(_, _, _) -> @continue_symbol end
+  def deep_merge(original, override) do
+    standard_resolve(nil, original, override)
   end
 
   @doc """
@@ -128,6 +128,16 @@ defmodule DeepMerge do
   defp continue_deep_merge(base, override, fun) do
     resolver = rebuild_resolver(fun)
     DeepMerge.Resolver.resolve(base, override, resolver)
+  end
+
+  defp standard_resolve(_key, original, override) do
+    # Why is this wrapped in an anonymous function and not just passing along
+    # `&standard_resolve/3` ?
+    # That'd require standard_resolve/3 to be public afaik and I don't want that
+    resolve = fn(my_key, my_original, my_override) ->
+      standard_resolve my_key, my_original, my_override
+    end
+    DeepMerge.Resolver.resolve(original, override, resolve)
   end
 
 end
