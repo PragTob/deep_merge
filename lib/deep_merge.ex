@@ -1,6 +1,6 @@
 defmodule DeepMerge do
   @moduledoc """
-  Provides functionality for deeply/recursively merging entites (normally for
+  Provides functionality for deeply/recursively merging structures (normally for
   `Map` and `Keyword`).
 
   If you want to change the behaviour of a custom struct or something similar,
@@ -20,6 +20,10 @@ defmodule DeepMerge do
   It does not merge structs or structs with maps. If you want structs to be
   merged then please have a look at the `DeepMerge.Resolver` protocol and
   consider implementing it.
+
+  Also, while it says `Map` and `Keyword` here, it is really dependent on which
+  types implement the `DeepMerge.Resolver` protocol, which by default are `Map`
+  and `Keyword`.
 
   ## Examples
 
@@ -55,6 +59,22 @@ defmodule DeepMerge do
   end
 
   @doc """
+  A variant of `DeepMerge.deep_merge/2` that allows to modify the merge behavior
+  through the additional passed in function.
+
+  This is similar to the relationship between `Map.merge/2` and `Map.merge/3`
+  and the structure of the function is exactly the same, e.g. the passed in
+  arguments are `key`, `original` and `override`.
+
+  The function is called before a merge is performed. If it returns any value
+  that value is inserted at that point during the deep_merge. If the deep merge
+  should continue like normal you need to return the symbol returned by
+  `DeepMerge.continue_deep_merge/1`.
+
+  If the merge conflict occurs at the top level then `key` is `nil`.
+
+  The example shows how this can be used to modify `deep_merge` not to merge
+  keyword lists, in case you don't like that behavior.
 
   ## Examples
 
@@ -68,9 +88,9 @@ defmodule DeepMerge do
       ...> %{a: %{z: 5}, c: [x: 0]}, resolver)
       %{a: %{b: 1, z: 5}, c: [x: 0]}
   """
-  def deep_merge(base, override, resolve_function) do
+  def deep_merge(original, override, resolve_function) do
     resolver = build_resolver(resolve_function)
-    resolver.(nil, base, override)
+    resolver.(nil, original, override)
   end
 
 
