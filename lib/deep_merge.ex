@@ -3,8 +3,8 @@ defmodule DeepMerge do
   Provides functionality for deeply/recursively merging structures (normally for
   `Map` and `Keyword`).
 
-  If you want to change the behaviour of a custom struct or something similar,
-  please have a look at the `DeepMerge.Resolver` protocol.
+  If you want to change the deep merge behavior of a custom struct or something
+  similar, please have a look at the `DeepMerge.Resolver` protocol.
   """
 
   alias DeepMerge.Resolver

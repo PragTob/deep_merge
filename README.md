@@ -49,7 +49,7 @@ It is worth noting that structs are not deeply merged - not with each other and 
 
 ## Customization via protocols
 
-What is merged and how is defined by implementing the `DeepMerge.Resolver` protocol. This library implements it for `Map`, `List` and falls back to `Any` (where the right hand side value/override is taken). You can check out the details [here](https://github.com/PragTob/deep_merge/blob/master/lib/deep_merge/resolver.ex). If you want to change this behavior for a custom struct you just have to adopt the behavior for it:
+What is merged and how is defined by implementing the `DeepMerge.Resolver` protocol. This library implements it for `Map`, `List` and falls back to `Any` (where the right hand side value/override is taken). You can check out the details [here](https://github.com/PragTob/deep_merge/blob/master/lib/deep_merge/resolver.ex). If you want to change this behavior for a custom struct you just have to write an implementation for it:
 
 ```elixir
 defmodule MyStruct do
@@ -94,7 +94,7 @@ In the example above the behavior is changed so the keyword lists are not deep_m
 
 Well not necessarily, no. There are [very simple implementations for maps that use Map.merge/3](http://stackoverflow.com/a/38865647).
 
-There are subtle things that can be missed there though, for one the most simple implementation also merges structs which is not always what you want. For Keyword lists on the other hand you gotta be careful that you don't accidentally merge keyword lists with lists as that's [currently possible](https://github.com/elixir-lang/elixir/issues/5395) atm.
+There are subtle things that can be missed there though (and I missed the first time around), for one the most simple implementation also merges structs which is not always what you want. For Keyword lists on the other hand you gotta be careful that you don't accidentally merge keyword lists with lists as that's [currently possible](https://github.com/elixir-lang/elixir/issues/5395) atm.
 
 This library takes care of those problems and will take care of further problems/edge cases should they appear so you can focus on your business logic.
 
