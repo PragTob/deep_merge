@@ -13,7 +13,7 @@ This functionality can be useful for instance when merging a default configurati
 DeepMerge.deep_merge(default_config, custom_config) # ==> merged configuration
 ```
 
-I'd like this to be a feature of Elixir itself, however the proposal [was rejected](https://github.com/elixir-lang/elixir/pull/5339) hence this library exists :)
+I wanted this to be a feature of Elixir itself, however the proposal [was rejected](https://github.com/elixir-lang/elixir/pull/5339) hence this library exists :)
 
 ## Installation
 
@@ -94,7 +94,7 @@ In the example above the behavior is changed so the keyword lists are not deep_m
 
 Well not necessarily, no. There are [very simple implementations for maps that use Map.merge/3](http://stackoverflow.com/a/38865647).
 
-There are subtle things that can be missed there though, for one the most simple implementation also merges structs which is not always what you want. For Keyword lists on the other hand you gotta be careful that you don't accidentally merge keyword lists with lists as that's [totally possible](https://github.com/elixir-lang/elixir/issues/5395) atm.
+There are subtle things that can be missed there though, for one the most simple implementation also merges structs which is not always what you want. For Keyword lists on the other hand you gotta be careful that you don't accidentally merge keyword lists with lists as that's [currently possible](https://github.com/elixir-lang/elixir/issues/5395) atm.
 
 This library takes care of those problems and will take care of further problems/edge cases should they appear so you can focus on your business logic.
 
