@@ -7,6 +7,7 @@ defmodule DeepMerge do
   please have a look at the `DeepMerge.Resolver` protocol.
   """
 
+  alias DeepMerge.Resolver
   @continue_symbol :__deep_merge_continue
 
   @doc """
@@ -127,7 +128,7 @@ defmodule DeepMerge do
 
   defp continue_deep_merge(base, override, fun) do
     resolver = rebuild_resolver(fun)
-    DeepMerge.Resolver.resolve(base, override, resolver)
+    Resolver.resolve(base, override, resolver)
   end
 
   defp standard_resolve(_key, original, override) do
@@ -137,7 +138,7 @@ defmodule DeepMerge do
     resolve = fn(my_key, my_original, my_override) ->
       standard_resolve my_key, my_original, my_override
     end
-    DeepMerge.Resolver.resolve(original, override, resolve)
+    Resolver.resolve(original, override, resolve)
   end
 
 end
