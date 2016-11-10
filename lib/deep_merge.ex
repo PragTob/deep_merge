@@ -11,14 +11,14 @@ defmodule DeepMerge do
   @continue_symbol :__deep_merge_continue
 
   @doc """
-  Deeply merges two maps or keyword list, meaning that if two conflicting values
-  are maps or keyword lists themselves then they will also be merged.
+  Deeply merges two maps or keyword list `original` and `override`.
 
-  This is rather similar to `Map.merge/2` and `Keyword.merge/2`. However, it
-  always applies merging to both maps and keyword lists and also merges those
-  recursively.
+  In more detail, if two conflicting values are maps or keyword lists themselves
+  then they will also be merged recursively. This is an extension in that sense
+  to what `Map.merge/2` and `Keyword.merge/2` do as it doesn't just override map
+  or keyword values but tries to merge them.
 
-  It does not merge structs or structs with maps. If you want structs to be
+  It does not merge structs or structs with maps. If you want your structs to be
   merged then please have a look at the `DeepMerge.Resolver` protocol and
   consider implementing it.
 

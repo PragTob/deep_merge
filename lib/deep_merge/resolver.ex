@@ -45,6 +45,11 @@ defprotocol DeepMerge.Resolver do
 end
 
 defimpl DeepMerge.Resolver, for: Map do
+  @doc """
+  Resolve the merge between two maps by continuing to deeply merge them.
+
+  Don't merge structs or if its any other type take the override value.
+  """
   def resolve(_original, override = %{__struct__: _}, _fun) do
     override
   end
@@ -55,6 +60,9 @@ defimpl DeepMerge.Resolver, for: Map do
 end
 
 defimpl DeepMerge.Resolver, for: List do
+  @doc """
+  Deeply merge keyword lists but avoid overriding a keywords with an empty list.
+  """
   def resolve(original = [{_k, _v} | _], override = [{_, _} | _], resolver) do
     Keyword.merge(original, override, resolver)
   end
@@ -65,5 +73,8 @@ defimpl DeepMerge.Resolver, for: List do
 end
 
 defimpl DeepMerge.Resolver, for: Any do
+  @doc """
+  Fall back to always taking the override.
+  """
   def resolve(_original, override, _fun), do: override
 end
