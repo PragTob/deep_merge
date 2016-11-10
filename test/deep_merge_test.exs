@@ -85,4 +85,32 @@ defmodule DeepMergeTest do
                       %{a: -1, b: [c: 5, d: 1], e: ""},
                       number_adder) == %{a: 0, b: [c: 7, d: 1], e: ""}
   end
+
+  test "deep_merge/2 uses override semantics when mixing maps and kwlists" do
+    assert deep_merge(%{a: 1}, [b: 2]) == [b: 2]
+    assert deep_merge([b: 2], %{a: 1}) == %{a: 1}
+  end
+
+  test "deep_merge/2 errors out with incompatible types" do
+    assert_incompatible fn -> deep_merge %{a: 1}, 2 end
+    assert_incompatible fn -> deep_merge 2, %{b: 2} end
+    assert_incompatible fn -> deep_merge 1, 2 end
+    assert_incompatible fn -> deep_merge :atom, :other_atom end
+  end
+
+  test "deep_merge/3 uses override semantics when mixing maps and kwlists" do
+    assert deep_merge(%{a: 1}, [b: 2], number_adder) == [b: 2]
+    assert deep_merge([b: 2], %{a: 1}, number_adder) == %{a: 1}
+  end
+
+  test "deep_merge/3 errors out with incompatible types" do
+    assert_incompatible fn -> deep_merge %{a: 1}, 2, number_adder end
+    assert_incompatible fn -> deep_merge 2, %{b: 2}, number_adder end
+    assert_incompatible fn -> deep_merge 1, 2, number_adder end
+    assert_incompatible fn -> deep_merge :atom, :other_atom, number_adder end
+  end
+
+  defp assert_incompatible(function) do
+    assert_raise FunctionClauseError, function
+  end
 end

@@ -55,7 +55,9 @@ defmodule DeepMerge do
       iex> DeepMerge.deep_merge(%{a: [b: %{c: [d: "foo", e: 2]}]}, %{a: [b: %{c: [d: "bar"]}]})
       %{a: [b: %{c: [e: 2, d: "bar"]}]}
   """
-  def deep_merge(original, override) do
+  def deep_merge(original, override)
+      when (is_map(original) or is_list(original)) and
+           (is_map(override) or is_list(override)) do
     standard_resolve(nil, original, override)
   end
 
@@ -89,7 +91,9 @@ defmodule DeepMerge do
       ...> %{a: %{z: 5}, c: [x: 0]}, resolver)
       %{a: %{b: 1, z: 5}, c: [x: 0]}
   """
-  def deep_merge(original, override, resolve_function) do
+  def deep_merge(original, override, resolve_function)
+      when (is_map(original) or is_list(original)) and
+           (is_map(override) or is_list(override)) do
     resolver = build_resolver(resolve_function)
     resolver.(nil, original, override)
   end
