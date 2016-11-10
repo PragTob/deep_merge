@@ -35,7 +35,7 @@ defprotocol DeepMerge.Resolver do
     def resolve(original, override = %{__struct__: MyStruct}, resolver) do
       Map.merge(original, override, resolver)
     end
-    def resolve(_, override) do
+    def resolve(_, override, _) do
       override
     end
   end
