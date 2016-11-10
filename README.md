@@ -1,4 +1,4 @@
-# DeepMerge
+# DeepMerge [![Build Status](https://travis-ci.org/PragTob/deep_merge.svg?branch=master)](https://travis-ci.org/PragTob/deep_merge) [![Inline docs](http://inch-ci.org/github/PragTob/deep_merge.svg?branch=master)](http://inch-ci.org/github/PragTob/deep_merge)
 
 Provides functionality for "deep merging" maps and keyword lists in elixir, which is if during merging both values are maps/keyword lists merge them recursively.
 
