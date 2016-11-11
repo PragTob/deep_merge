@@ -13,6 +13,13 @@ This functionality can be useful for instance when merging a default configurati
 DeepMerge.deep_merge(default_config, custom_config) # ==> merged configuration
 ```
 
+Further features include:
+
+* It handles both maps and keyword lists
+* It does not merge structs or maps with structs…
+* …but you can implement the simple DeepMerge.Resolver protocol for types/structs of your choice to also make them deep mergable
+* a deep_merge/3 variant that gets a function similar to Map.merge/3 to modify the merging behavior, for instance in case you don't want keyword lists to be merged or you want all lists to be appended
+
 I wanted this to be a feature of Elixir itself, however the proposal [was rejected](https://github.com/elixir-lang/elixir/pull/5339) hence this library exists :)
 
 ## Installation
