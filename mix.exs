@@ -10,9 +10,9 @@ defmodule DeepMerge.Mixfile do
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      elixirc_paths: elixirc_paths(Mix.env),
-     deps: deps,
+     deps: deps(),
      docs: [source_ref: @version],
-     package: package,
+     package: package(),
      name: "deep_merge",
      source_url: "https://github.com/PragTob/deep_merge",
      description: """

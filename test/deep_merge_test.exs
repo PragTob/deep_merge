@@ -64,12 +64,12 @@ defmodule DeepMergeTest do
   end
 
   test "deep_merge/3 can successfully avoid marging kwlists" do
-    assert deep_merge([a: :b], [c: :d], kwlist_avoider) == [c: :d]
-    assert deep_merge(%{a: :b}, %{c: :d}, kwlist_avoider) == %{a: :b, c: :d}
+    assert deep_merge([a: :b], [c: :d], kwlist_avoider()) == [c: :d]
+    assert deep_merge(%{a: :b}, %{c: :d}, kwlist_avoider()) == %{a: :b, c: :d}
     base = %{a: [b: 1], c: %{d: 1, e: %{f: 2}}}
     override = %{a: [c: 3], c: %{e: %{g: 10}}}
     expected = %{a: [c: 3], c: %{d: 1, e: %{f: 2, g: 10}}}
-    assert deep_merge(base, override, kwlist_avoider) == expected
+    assert deep_merge(base, override, kwlist_avoider()) == expected
   end
 
   def number_adder do
@@ -83,7 +83,7 @@ defmodule DeepMergeTest do
   test "deep_merge/3 optional function can be used to add numbers if desired" do
     assert deep_merge(%{a: 1, b: [c: 2]},
                       %{a: -1, b: [c: 5, d: 1], e: ""},
-                      number_adder) == %{a: 0, b: [c: 7, d: 1], e: ""}
+                      number_adder()) == %{a: 0, b: [c: 7, d: 1], e: ""}
   end
 
   test "deep_merge/2 uses override semantics when mixing maps and kwlists" do
@@ -99,15 +99,15 @@ defmodule DeepMergeTest do
   end
 
   test "deep_merge/3 uses override semantics when mixing maps and kwlists" do
-    assert deep_merge(%{a: 1}, [b: 2], number_adder) == [b: 2]
-    assert deep_merge([b: 2], %{a: 1}, number_adder) == %{a: 1}
+    assert deep_merge(%{a: 1}, [b: 2], number_adder()) == [b: 2]
+    assert deep_merge([b: 2], %{a: 1}, number_adder()) == %{a: 1}
   end
 
   test "deep_merge/3 errors out with incompatible types" do
-    assert_incompatible fn -> deep_merge %{a: 1}, 2, number_adder end
-    assert_incompatible fn -> deep_merge 2, %{b: 2}, number_adder end
-    assert_incompatible fn -> deep_merge 1, 2, number_adder end
-    assert_incompatible fn -> deep_merge :atom, :other_atom, number_adder end
+    assert_incompatible fn -> deep_merge %{a: 1}, 2, number_adder() end
+    assert_incompatible fn -> deep_merge 2, %{b: 2}, number_adder() end
+    assert_incompatible fn -> deep_merge 1, 2, number_adder() end
+    assert_incompatible fn -> deep_merge :atom, :other_atom, number_adder() end
   end
 
   defp assert_incompatible(function) do
