@@ -44,8 +44,8 @@ defmodule DeepMerge.Mixfile do
       {:credo,       "~> 0.5",   only: :dev},
       {:benchee,     "~> 0.5",   only: :dev},
       {:ex_doc,      "~> 0.11",  only: :dev},
-      {:earmark,     "~> 1.0.1", only: :dev},
-      {:excoveralls, "~> 0.6.1", only: :test},
+      {:earmark,     "~> 1.2", only: :dev},
+      {:excoveralls, "~> 0.7", only: :test},
       {:inch_ex,     "~> 0.5",   only: :docs}
     ]
   end
