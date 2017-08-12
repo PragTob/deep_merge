@@ -2,11 +2,23 @@ language: elixir
 elixir:
   - 1.2.6
   - 1.3.4
-  - 1.4.0
+  - 1.4.5
+  - 1.5.0
 otp_release:
   - 18.3
-  - 19.2
+  - 19.3
+  - 20.0
+matrix:
+  exclude:
+    - elixir: 1.3.4
+      otp_release: 20.0
+    - elixir: 1.2.6
+      otp_release: 20.0
+before_script: MIX_ENV=test mix compile --warnings-as-errors
 script: mix coveralls.travis
 after_script:
   - mix deps.get --only docs
   - MIX_ENV=docs mix inch.report
+cache:
+  directories:
+    - _build
