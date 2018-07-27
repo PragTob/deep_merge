@@ -28,7 +28,7 @@ I wanted this to be a feature of Elixir itself, however the proposal [was reject
 
   ```elixir
   def deps do
-    [{:deep_merge, "~> 0.1.0"}]
+    [{:deep_merge, "~> 0.1.1"}]
   end
   ```
 
