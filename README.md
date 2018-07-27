@@ -36,7 +36,7 @@ I wanted this to be a feature of Elixir itself, however the proposal [was reject
 
   ```elixir
   def application do
-    [applications: [:deep_merge]]
+    [extra_applications: [:deep_merge]]
   end
   ```
 
