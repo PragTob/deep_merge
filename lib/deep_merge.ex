@@ -58,7 +58,7 @@ defmodule DeepMerge do
   @spec deep_merge(map() | keyword(), map | keyword()) :: map() | keyword()
   def deep_merge(original, override)
       when (is_map(original) or is_list(original)) and
-           (is_map(override) or is_list(override)) do
+             (is_map(override) or is_list(override)) do
     standard_resolve(nil, original, override)
   end
 
@@ -92,14 +92,14 @@ defmodule DeepMerge do
       ...> %{a: %{z: 5}, c: [x: 0]}, resolver)
       %{a: %{b: 1, z: 5}, c: [x: 0]}
   """
-  @spec deep_merge(map() | keyword(), map() | keyword(), (any(), any() -> any())) :: map() | keyword()
+  @spec deep_merge(map() | keyword(), map() | keyword(), (any(), any() -> any())) ::
+          map() | keyword()
   def deep_merge(original, override, resolve_function)
       when (is_map(original) or is_list(original)) and
-           (is_map(override) or is_list(override)) do
+             (is_map(override) or is_list(override)) do
     resolver = build_resolver(resolve_function)
     resolver.(nil, original, override)
   end
-
 
   @doc """
   The symbol to return in the function in `deep_merge/3` when deep merging
@@ -115,11 +115,13 @@ defmodule DeepMerge do
 
   @spec build_resolver((any(), any() -> any())) :: (any(), any(), any() -> any())
   defp build_resolver(resolve_function) do
-    my_resolver = fn(key, base, override, fun) ->
+    my_resolver = fn key, base, override, fun ->
       resolved_value = resolve_function.(key, base, override)
+
       case resolved_value do
-         @continue_symbol ->
-           continue_deep_merge(base, override, fun)
+        @continue_symbol ->
+          continue_deep_merge(base, override, fun)
+
         _anything ->
           resolved_value
       end
@@ -129,7 +131,7 @@ defmodule DeepMerge do
   end
 
   defp rebuild_resolver(resolve_function) do
-    fn(key, base, override) ->
+    fn key, base, override ->
       resolve_function.(key, base, override, resolve_function)
     end
   end
@@ -142,5 +144,4 @@ defmodule DeepMerge do
   defp standard_resolve(_key, original, override) do
     Resolver.resolve(original, override, &standard_resolve/3)
   end
-
 end
