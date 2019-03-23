@@ -11,8 +11,12 @@ matrix:
   exclude:
     - elixir: 1.8.0
       otp_release: 19.3
-before_script: MIX_ENV=test mix compile --warnings-as-errors
+before_script:
+  - MIX_ENV=test mix compile --warnings-as-errors
+  - travis_wait mix dialyzer --plt
 script:
+  - mix credo --strict
+  - mix format --check-formatted
   - mix dialyzer --halt-exit-status --format simple
   - mix coveralls.travis
 after_script:
