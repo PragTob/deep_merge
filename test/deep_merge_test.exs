@@ -4,16 +4,20 @@ defmodule DeepMergeTest do
   import DeepMerge
 
   test "deep_merge/2 with different keyword list & list combinations" do
-    assert deep_merge([a: [b: []], f: 5], [a: [b: [c: 2]]]) ==
-           [f: 5, a: [b: [c: 2]]]
-    assert deep_merge([a: [b: [c: 2]], f: 5], [a: [b: []]]) ==
-           [f: 5, a: [b: [c: 2]]]
-    assert deep_merge([a: [b: [c: 2]], f: 5], [a: [b: [1, 2, 3]]]) ==
-           [f: 5, a: [b: [1, 2, 3]]]
-    assert deep_merge([a: [b: [1, 2, 3]], f: 5], [a: [b: [c: 2]]]) ==
-           [f: 5, a: [b: [c: 2]]]
-    assert deep_merge([a: [b: []], f: 5], [a: [b: []]]) ==
-           [f: 5, a: [b: []]]
+    assert deep_merge([a: [b: []], f: 5], a: [b: [c: 2]]) ==
+             [f: 5, a: [b: [c: 2]]]
+
+    assert deep_merge([a: [b: [c: 2]], f: 5], a: [b: []]) ==
+             [f: 5, a: [b: [c: 2]]]
+
+    assert deep_merge([a: [b: [c: 2]], f: 5], a: [b: [1, 2, 3]]) ==
+             [f: 5, a: [b: [1, 2, 3]]]
+
+    assert deep_merge([a: [b: [1, 2, 3]], f: 5], a: [b: [c: 2]]) ==
+             [f: 5, a: [b: [c: 2]]]
+
+    assert deep_merge([a: [b: []], f: 5], a: [b: []]) ==
+             [f: 5, a: [b: []]]
   end
 
   defmodule User do
@@ -29,15 +33,17 @@ defmodule DeepMergeTest do
   test "deep_merge/2 merges Structs with the Resolver protocol implemented" do
     original = %{a: %MyStruct{attrs: %{b: 1}}}
     override = %{a: %MyStruct{attrs: %{c: 2}}}
+
     assert deep_merge(original, override) ==
-      %{a: %MyStruct{attrs: %{b: 1, c: 2}}}
+             %{a: %MyStruct{attrs: %{b: 1, c: 2}}}
   end
 
   test "deep_merge/2 merges Structs with protocol implemented top level" do
     original = %MyStruct{attrs: %{b: 1, c: 0}}
     override = %MyStruct{attrs: %{c: 2, e: 4}}
+
     assert deep_merge(original, override) ==
-      %MyStruct{attrs: %{b: 1, c: 2, e: 4}}
+             %MyStruct{attrs: %{b: 1, c: 2, e: 4}}
   end
 
   test "deep_merge/2 doesn't merge structs without the protocol implemented" do
@@ -47,7 +53,7 @@ defmodule DeepMergeTest do
   end
 
   test "deep_merge/2 doesn't attempt to merge maps and structs" do
-    with_map    = %{a: %{attrs: %{b: 1}}}
+    with_map = %{a: %{attrs: %{b: 1}}}
     with_struct = %{a: %User{attrs: %{c: 2}}}
 
     assert deep_merge(with_map, with_struct) == with_struct
@@ -56,10 +62,11 @@ defmodule DeepMergeTest do
 
   def kwlist_avoider do
     fn
-    (_, original, override) when is_list(original) and is_list(override) ->
-     override
-    (_, _original, _override) ->
-     DeepMerge.continue_deep_merge
+      _, original, override when is_list(original) and is_list(override) ->
+        override
+
+      _, _original, _override ->
+        DeepMerge.continue_deep_merge()
     end
   end
 
@@ -74,28 +81,32 @@ defmodule DeepMergeTest do
 
   def number_adder do
     fn
-    (_, original, override) when is_number(original) and is_number(override) ->
-     original + override
-    (_, _original, _override) ->
-     DeepMerge.continue_deep_merge
+      _, original, override when is_number(original) and is_number(override) ->
+        original + override
+
+      _, _original, _override ->
+        DeepMerge.continue_deep_merge()
     end
   end
+
   test "deep_merge/3 optional function can be used to add numbers if desired" do
-    assert deep_merge(%{a: 1, b: [c: 2]},
-                      %{a: -1, b: [c: 5, d: 1], e: ""},
-                      number_adder()) == %{a: 0, b: [c: 7, d: 1], e: ""}
+    assert deep_merge(
+             %{a: 1, b: [c: 2]},
+             %{a: -1, b: [c: 5, d: 1], e: ""},
+             number_adder()
+           ) == %{a: 0, b: [c: 7, d: 1], e: ""}
   end
 
   test "deep_merge/2 uses override semantics when mixing maps and kwlists" do
-    assert deep_merge(%{a: 1}, [b: 2]) == [b: 2]
+    assert deep_merge(%{a: 1}, b: 2) == [b: 2]
     assert deep_merge([b: 2], %{a: 1}) == %{a: 1}
   end
 
   test "deep_merge/2 errors out with incompatible types" do
-    assert_incompatible fn -> deep_merge %{a: 1}, 2 end
-    assert_incompatible fn -> deep_merge 2, %{b: 2} end
-    assert_incompatible fn -> deep_merge 1, 2 end
-    assert_incompatible fn -> deep_merge :atom, :other_atom end
+    assert_incompatible(fn -> deep_merge(%{a: 1}, 2) end)
+    assert_incompatible(fn -> deep_merge(2, %{b: 2}) end)
+    assert_incompatible(fn -> deep_merge(1, 2) end)
+    assert_incompatible(fn -> deep_merge(:atom, :other_atom) end)
   end
 
   test "deep_merge/3 uses override semantics when mixing maps and kwlists" do
@@ -104,10 +115,10 @@ defmodule DeepMergeTest do
   end
 
   test "deep_merge/3 errors out with incompatible types" do
-    assert_incompatible fn -> deep_merge %{a: 1}, 2, number_adder() end
-    assert_incompatible fn -> deep_merge 2, %{b: 2}, number_adder() end
-    assert_incompatible fn -> deep_merge 1, 2, number_adder() end
-    assert_incompatible fn -> deep_merge :atom, :other_atom, number_adder() end
+    assert_incompatible(fn -> deep_merge(%{a: 1}, 2, number_adder()) end)
+    assert_incompatible(fn -> deep_merge(2, %{b: 2}, number_adder()) end)
+    assert_incompatible(fn -> deep_merge(1, 2, number_adder()) end)
+    assert_incompatible(fn -> deep_merge(:atom, :other_atom, number_adder()) end)
   end
 
   defp assert_incompatible(function) do
