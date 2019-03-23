@@ -1,4 +1,5 @@
 defmodule MyStruct do
+  @moduledoc false
   defstruct [:attrs]
 end
 
