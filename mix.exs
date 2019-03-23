@@ -20,11 +20,15 @@ defmodule DeepMerge.Mixfile do
      package: package(),
      name: "deep_merge",
      source_url: "https://github.com/PragTob/deep_merge",
+     dialyzer: [
+       flags: [:unmatched_returns, :error_handling, :race_conditions, :underspecs],
+       ignore_warnings: ".dialyzer_ignore.exs",
+       list_unused_filters: true
+      ],
      description: """
      Deep (recursive) merging for maps, keyword lists and whatever else
      you may want via implementing a simple protocol.
      """
-
    ]
   end
 
@@ -36,17 +40,17 @@ defmodule DeepMerge.Mixfile do
   #
   # Type "mix help compile.app" for more information
   def application do
-    [applications: [:logger]]
+    []
   end
 
   defp deps do
     [
       {:credo,       "~> 0.5",   only: :dev},
-      {:benchee,     "~> 0.5",   only: :dev},
       {:ex_doc,      "~> 0.11",  only: :dev},
       {:earmark,     "~> 1.2", only: :dev},
       {:excoveralls, "~> 0.7", only: :test},
-      {:inch_ex,     "~> 0.5",   only: :docs}
+      {:inch_ex,     "~> 0.5",   only: :docs},
+      {:dialyxir, "~> 1.0.0-rc.4", only: [:dev], runtime: false}
     ]
   end
 
