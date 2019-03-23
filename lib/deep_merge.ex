@@ -55,6 +55,7 @@ defmodule DeepMerge do
       iex> DeepMerge.deep_merge(%{a: [b: %{c: [d: "foo", e: 2]}]}, %{a: [b: %{c: [d: "bar"]}]})
       %{a: [b: %{c: [e: 2, d: "bar"]}]}
   """
+  @spec deep_merge(map() | keyword(), map | keyword()) :: map() | keyword()
   def deep_merge(original, override)
       when (is_map(original) or is_list(original)) and
            (is_map(override) or is_list(override)) do
@@ -91,6 +92,7 @@ defmodule DeepMerge do
       ...> %{a: %{z: 5}, c: [x: 0]}, resolver)
       %{a: %{b: 1, z: 5}, c: [x: 0]}
   """
+  @spec deep_merge(map() | keyword(), map() | keyword(), (any(), any() -> any())) :: map() | keyword()
   def deep_merge(original, override, resolve_function)
       when (is_map(original) or is_list(original)) and
            (is_map(override) or is_list(override)) do
@@ -108,8 +110,10 @@ defmodule DeepMerge do
       iex> DeepMerge.continue_deep_merge
       :__deep_merge_continue
   """
+  @spec continue_deep_merge() :: :__deep_merge_continue
   def continue_deep_merge, do: @continue_symbol
 
+  @spec build_resolver((any(), any() -> any())) :: (any(), any(), any() -> any())
   defp build_resolver(resolve_function) do
     my_resolver = fn(key, base, override, fun) ->
       resolved_value = resolve_function.(key, base, override)
@@ -136,13 +140,7 @@ defmodule DeepMerge do
   end
 
   defp standard_resolve(_key, original, override) do
-    # Why is this wrapped in an anonymous function and not just passing along
-    # `&standard_resolve/3` ?
-    # That'd require standard_resolve/3 to be public afaik and I don't want that
-    resolve = fn(my_key, my_original, my_override) ->
-      standard_resolve my_key, my_original, my_override
-    end
-    Resolver.resolve(original, override, resolve)
+    Resolver.resolve(original, override, &standard_resolve/3)
   end
 
 end
