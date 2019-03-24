@@ -57,8 +57,7 @@ defmodule DeepMerge do
   """
   @spec deep_merge(map() | keyword(), map | keyword()) :: map() | keyword()
   def deep_merge(original, override)
-      when (is_map(original) or is_list(original)) and
-             (is_map(override) or is_list(override)) do
+      when (is_map(original) or is_list(original)) and (is_map(override) or is_list(override)) do
     standard_resolve(nil, original, override)
   end
 
@@ -95,8 +94,7 @@ defmodule DeepMerge do
   @spec deep_merge(map() | keyword(), map() | keyword(), (any(), any() -> any())) ::
           map() | keyword()
   def deep_merge(original, override, resolve_function)
-      when (is_map(original) or is_list(original)) and
-             (is_map(override) or is_list(override)) do
+      when (is_map(original) or is_list(original)) and (is_map(override) or is_list(override)) do
     resolver = build_resolver(resolve_function)
     resolver.(nil, original, override)
   end
