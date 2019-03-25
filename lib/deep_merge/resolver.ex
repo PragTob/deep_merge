@@ -94,6 +94,9 @@ defimpl DeepMerge.Resolver, for: Any do
 
   defp get_implementors({:consolidated, implementors}), do: implementors
   defp get_implementors(:not_consolidated) do
-    raise "Protocols not consolidated and trying to merge two structs of the same type. Not supported!"
+    IO.warn "Protocols not consolidated and trying to merge two structs of the same type. Not supported!"
+
+    # let the code work with override semantics without being intrusive
+    []
   end
 end
