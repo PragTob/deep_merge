@@ -12,3 +12,13 @@ defimpl DeepMerge.Resolver, for: MyStruct do
     override
   end
 end
+
+defmodule Derived do
+  @derive [DeepMerge.Resolver]
+  defstruct [:attrs]
+end
+
+defmodule Derived2 do
+  @derive [DeepMerge.Resolver]
+  defstruct [:attrs]
+end
