@@ -40,6 +40,34 @@ defmodule DeepMergeTest do
       assert deep_merge(original, override) == %MyStruct{attrs: %{b: 1, c: 2, e: 4}}
     end
 
+    test "the default derived implementation deeply merges structs" do
+      original = %Derived{attrs: %{b: 1, c: 0}}
+      override = %Derived{attrs: %{c: 2, e: 4}}
+
+      assert deep_merge(original, override) == %Derived{attrs: %{b: 1, c: 2, e: 4}}
+    end
+
+    test "doesn't merge two different structs that both have derived the implementation" do
+      original = %Derived{attrs: %{b: 1, c: 0}}
+      override = %Derived2{attrs: %{c: 2, e: 4}}
+
+      assert deep_merge(original, override) == override
+    end
+
+    test "merging when default derived also works non top level" do
+      original = %{a: %Derived{attrs: %{b: 1, a: 0}}}
+      override = %{a: %Derived{attrs: %{c: 2, a: 42}}}
+
+      assert deep_merge(original, override) == %{a: %Derived{attrs: %{a: 42, b: 1, c: 2}}}
+    end
+
+    test "merging when default derived for different structs also doesn't work top level" do
+      original = %{a: %Derived{attrs: %{b: 1, a: 0}}}
+      override = %{a: %Derived2{attrs: %{c: 2, a: 42}}}
+
+      assert deep_merge(original, override) == override
+    end
+
     test "doesn't merge structs without the protocol implemented" do
       original = %{a: %MyStruct{attrs: %{b: 1}}}
       override = %{a: %User{attrs: %{c: 2}}}

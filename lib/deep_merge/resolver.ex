@@ -80,5 +80,20 @@ defimpl DeepMerge.Resolver, for: Any do
   @doc """
   Fall back to always taking the override.
   """
+  def resolve(original = %{__struct__: struct}, override = %{__struct__: struct}, resolver) do
+     implementors = get_implementors(DeepMerge.Resolver.__protocol__(:impls))
+
+    if Enum.member?(implementors, struct) do
+      Map.merge(original, override, resolver)
+    else
+      override
+    end
+  end
+
   def resolve(_original, override, _fun), do: override
+
+  defp get_implementors({:consolidated, implementors}), do: implementors
+  defp get_implementors(:not_consolidated) do
+    raise "Protocols not consolidated and trying to merge two structs of the same type. Not supported!"
+  end
 end
