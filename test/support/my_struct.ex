@@ -14,11 +14,13 @@ defimpl DeepMerge.Resolver, for: MyStruct do
 end
 
 defmodule Derived do
+  @moduledoc false
   @derive [DeepMerge.Resolver]
   defstruct [:attrs]
 end
 
 defmodule Derived2 do
+  @moduledoc false
   @derive [DeepMerge.Resolver]
   defstruct [:attrs]
 end
