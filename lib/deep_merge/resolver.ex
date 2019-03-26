@@ -3,12 +3,24 @@ defprotocol DeepMerge.Resolver do
   Protocol defining how conflicts during deep_merge should be resolved.
 
   As part of the DeepMerge library this protocol is already implemented for
-  `Map` and `List` as well as a fallback to `Any`.
+  `Map` and `List` as well as a fallback to `Any` (which just always takes the
+  override).
+
+  If you want your custom structs to also be deeply mergable and not just
+  override one another (default behaviour) you can derive the protocol:
+
+      defmodule Derived do
+        @derive [DeepMerge.Resolver]
+        defstruct [:attrs]
+      end
+
+  It will then automatically be deeply merged with structs of its own kind, not
+  with other structs or maps though.
   """
   @fallback_to_any true
 
   @doc """
-  Defines what happens when a merge conflict occurs on this data type during a
+  Defines what happens when a merge conflict occurs on this struct during a
   deep_merge.
 
   Can be implemented for additional data types to implement custom deep merging
@@ -18,28 +30,30 @@ defprotocol DeepMerge.Resolver do
     * `original` - the value in the original data structure, usually left side
     argument
     * `override` - the value with which `original` would be overridden in a
-    normal `merge/2`
+    normal `Map.merge/2`
     * `resolver` - the function used by DeepMerge to resolve merge conflicts,
     i.e. what you can pass to `Map.merge/3` and `Keyword.merge/3` to continue
     deeply merging.
 
   An example implementation might look like this if you want to deeply merge
-  your struct if the other value also is a struct:
+  your struct but only against non `nil` values (because all keys are always there)
+  if you merge against the same struct:
 
-  ```
-  defmodule MyStruct do
-    defstruct [:attrs]
-  end
+      defimpl DeepMerge.Resolver, for: MyStruct do
+        def resolve(original, override = %MyStruct{}, resolver) do
+          cleaned_override =
+            override
+            |> Map.from_struct()
+            |> Enum.reject(fn {_key, value} -> is_nil(value) end)
+            |> Map.new()
 
-  defimpl DeepMerge.Resolver, for: MyStruct do
-    def resolve(original, override = %{__struct__: MyStruct}, resolver) do
-      Map.merge(original, override, resolver)
-    end
-    def resolve(_, override, _) do
-      override
-    end
-  end
-  ```
+          Map.merge(original, cleaned_override, resolver)
+        end
+
+        def resolve(original, override, resolver) when is_map(override) do
+          Map.merge(original, override, resolver)
+        end
+      end
   """
   def resolve(original, override, resolver)
 end
@@ -79,6 +93,9 @@ end
 defimpl DeepMerge.Resolver, for: Any do
   @doc """
   Fall back to always taking the override.
+
+  Also the implementation for `@derive [DeppMerge.Resolver]` where structs of the same type that
+  implement the protocol are deeply merged.
   """
   def resolve(original = %{__struct__: struct}, override = %{__struct__: struct}, resolver) do
     implementors = get_implementors(DeepMerge.Resolver.__protocol__(:impls))
