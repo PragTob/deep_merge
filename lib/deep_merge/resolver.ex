@@ -37,7 +37,7 @@ defprotocol DeepMerge.Resolver do
 
   An example implementation might look like this if you want to deeply merge
   your struct but only against non `nil` values (because all keys are always there)
-  if you merge against the same struct:
+  if you merge against the same struct (but still merge with maps):
 
       defimpl DeepMerge.Resolver, for: MyStruct do
         def resolve(original, override = %MyStruct{}, resolver) do

@@ -72,7 +72,7 @@ defmodule DeepMerge do
   The function is called before a merge is performed. If it returns any value
   that value is inserted at that point during the deep_merge. If the deep merge
   should continue like normal you need to return the symbol returned by
-  `DeepMerge.continue_deep_merge/1`.
+  `DeepMerge.continue_deep_merge/0`.
 
   If the merge conflict occurs at the top level then `key` is `nil`.
 
