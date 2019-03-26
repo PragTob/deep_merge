@@ -28,7 +28,7 @@ Add `deep_merge` to your list of dependencies in `mix.exs`:
 
   ```elixir
   def deps do
-    [{:deep_merge, "~> 1.0.0"}]
+    [{:deep_merge, "~> 1.0"}]
   end
   ```
 
