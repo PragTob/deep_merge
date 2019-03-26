@@ -63,31 +63,31 @@ Benchee.run(
 # Benchmarking deep_merge/3 continue...
 
 # Name                            ips        average  deviation         median         99th %
-# Map.merge/2               1619.46 K        0.62 μs  ±3688.23%        0.55 μs        1.07 μs
-# Map.merge/3                 86.49 K       11.56 μs    ±87.01%        9.89 μs       36.62 μs
-# deep_merge/2                56.49 K       17.70 μs    ±46.26%       15.96 μs       40.55 μs
-# deep_merge/3 continue       50.67 K       19.74 μs    ±31.04%       18.18 μs       45.09 μs
+# Map.merge/2               1592.08 K        0.63 μs  ±2035.06%        0.57 μs        1.18 μs
+# Map.merge/3                 89.91 K       11.12 μs    ±83.43%       10.13 μs       27.41 μs
+# deep_merge/2                56.08 K       17.83 μs    ±33.18%       16.24 μs       53.73 μs
+# deep_merge/3 continue       50.18 K       19.93 μs    ±28.86%       18.49 μs       46.19 μs
 
 # Comparison:
-# Map.merge/2               1619.46 K
-# Map.merge/3                 86.49 K - 18.72x slower
-# deep_merge/2                56.49 K - 28.67x slower
-# deep_merge/3 continue       50.67 K - 31.96x slower
+# Map.merge/2               1592.08 K
+# Map.merge/3                 89.91 K - 17.71x slower
+# deep_merge/2                56.08 K - 28.39x slower
+# deep_merge/3 continue       50.18 K - 31.73x slower
 
 # Extended statistics:
 
 # Name                          minimum        maximum    sample size                     mode
-# Map.merge/2                   0.52 μs    28978.90 μs         3.99 M                  0.54 μs
-# Map.merge/3                   9.70 μs     3729.56 μs       406.55 K                  9.85 μs
-# deep_merge/2                 15.53 μs     2136.29 μs       270.02 K                 15.73 μs
-# deep_merge/3 continue        17.67 μs     1067.68 μs       244.03 K                 17.89 μs
+# Map.merge/2                   0.54 μs    17047.00 μs         3.86 M                  0.57 μs
+# Map.merge/3                   9.93 μs     2784.51 μs       422.25 K                 10.09 μs
+# deep_merge/2                 15.88 μs      450.84 μs       269.07 K                 16.13 μs
+# deep_merge/3 continue        18.02 μs      933.54 μs       242.12 K                 18.26 μs
 
 # Memory usage statistics:
 
 # Name                     Memory usage
 # Map.merge/2                   0.23 KB
-# Map.merge/3                  16.22 KB - 71.59x memory usage
-# deep_merge/2                 23.79 KB - 105.00x memory usage
-# deep_merge/3 continue        22.87 KB - 100.93x memory usage
+# Map.merge/3                  15.50 KB - 68.41x memory usage
+# deep_merge/2                 23.61 KB - 104.21x memory usage
+# deep_merge/3 continue        23.60 KB - 104.17x memory usage
 
 # **All measurements for memory usage were the same**

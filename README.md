@@ -118,6 +118,12 @@ This library takes care of those problems and will take care of further problems
 
 At the same time it offers extension mechanisms through protocols and a function in `deep_merge/3`. So, it should be adjustable to your use case and if not please open an issue :)
 
+## Performance
+
+You can check out [a benchmark and its results](https://github.com/PragTob/deep_merge/blob/master/benches/bench/deep_merge.exs).
+
+The TLDR; is this: In the sample it is about 30 times slower than `Map.merge/2` - however, less than twice as slow as calling `Map.merge/3` with simple overriding behaviour (same behaviour as `Map.merge/2`). This is because `Map.merge/2` is highly optimized, but we need to do much more than the `Map.merge/3` sample in the benchmark so I think it's a very passable result. We're still talking about a couple of μs.
+
 ## Considered feature-complete
 
 Unless you come with great feature ideas of course ;) So if you come here and there are no recent commits, don't worry - there are no known bugs or whatever. It's a small little library that does its job.
