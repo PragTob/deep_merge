@@ -2,15 +2,24 @@ language: elixir
 elixir:
   - 1.6.6
   - 1.7.4
-  - 1.8.0
+  - 1.8.2
+  - 1.9.4
+  - 1.10.4
 otp_release:
-  - 19.3
   - 20.3
   - 21.2
+  - 22.3
 matrix:
-  exclude:
-    - elixir: 1.8.0
+  include:
+    - elixir: 1.6.6
       otp_release: 19.3
+    - elixir: 1.7.4
+      otp_release: 19.3
+    - elixir: 1.10.4
+      otp_release: 23.0
+  exclude:
+    - elixir: 1.10.4
+      otp_release: 20.3
 before_script:
   - MIX_ENV=test mix compile --warnings-as-errors
   - travis_wait mix dialyzer --plt
