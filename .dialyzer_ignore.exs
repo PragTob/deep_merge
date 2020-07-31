@@ -1,4 +1,3 @@
 [
-  ~r/__impl__.*does\ not\ exist\./,
-  {"lib/deep_merge/resolver.ex:112:pattern_match The pattern can never match the type."}
+  {"lib/deep_merge/resolver.ex:114:pattern_match The pattern can never match the type {:consolidated, [Any | List | Map, ...]}."}
 ]
