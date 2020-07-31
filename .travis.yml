@@ -25,7 +25,7 @@ before_script:
 script:
   - mix credo --strict
   - mix format --check-formatted
-  - mix dialyzer --halt-exit-status --format simple
+  -  if ([[ "$TRAVIS_ELIXIR_VERSION" == "1.9"* ]] || [[ "$TRAVIS_ELIXIR_VERSION" == "1.10"* ]]); then mix dialyzer --halt-exit-status --format simple; fi
   - mix coveralls.travis
 after_script:
   - mix deps.get --only docs
