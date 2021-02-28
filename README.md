@@ -1,6 +1,15 @@
-# DeepMerge [![Hex Version](https://img.shields.io/hexpm/v/deep_merge.svg)](https://hex.pm/packages/deep_merge) [![docs](https://img.shields.io/badge/docs-hexpm-blue.svg)](https://hexdocs.pm/deep_merge/) [![Build Status](https://travis-ci.org/PragTob/deep_merge.svg?branch=master)](https://travis-ci.org/PragTob/deep_merge) [![Coverage Status](https://coveralls.io/repos/github/PragTob/deep_merge/badge.svg?branch=master)](https://coveralls.io/github/PragTob/deep_merge?branch=master) [![Inline docs](http://inch-ci.org/github/PragTob/deep_merge.svg?branch=master)](http://inch-ci.org/github/PragTob/deep_merge)
+# DeepMerge
 
-Provides functionality for "deep merging" maps and keyword lists in elixir, which is if during merging both values at the same key are maps/keyword lists merge them recursively. This is done via a protocol so can be extended for your own structs/data types if needbe.
+[![Build Status](https://travis-ci.org/PragTob/deep_merge.svg?branch=master)](https://travis-ci.org/PragTob/deep_merge)
+[![Coverage Status](https://coveralls.io/repos/github/PragTob/deep_merge/badge.svg?branch=main)](https://coveralls.io/github/PragTob/deep_merge?branch=main)
+[![Inline docs](http://inch-ci.org/github/PragTob/deep_merge.svg?branch=main)](http://inch-ci.org/github/PragTob/deep_merge)
+[![Module Version](https://img.shields.io/hexpm/v/deep_merge.svg)](https://hex.pm/packages/deep_merge)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-lightgreen.svg)](https://hexdocs.pm/deep_merge/)
+[![Total Download](https://img.shields.io/hexpm/dt/deep_merge.svg)](https://hex.pm/packages/deep_merge)
+[![License](https://img.shields.io/hexpm/l/deep_merge.svg)](https://github.com/PragTob/deep_merge/blob/main/LICENSE)
+[![Last Updated](https://img.shields.io/github/last-commit/PragTob/deep_merge.svg)](https://github.com/PragTob/deep_merge/commits/main)
+
+Provides functionality for "deep merging" maps and keyword lists in elixir, which is if during merging both values at the same key are maps/keyword lists merge them recursively. This is done via a protocol so can be extended for your own structs/data types if needed.
 
 ```
 iex> DeepMerge.deep_merge(%{a: 1, b: [x: 10, y: 9]}, %{b: [y: 20, z: 30], c: 4})
@@ -24,13 +33,15 @@ I wanted this to be a feature of Elixir itself, however the proposal [was reject
 
 ## Installation
 
-Add `deep_merge` to your list of dependencies in `mix.exs`:
+Add `:deep_merge` to your list of dependencies in `mix.exs`:
 
-  ```elixir
-  def deps do
-    [{:deep_merge, "~> 1.0"}]
-  end
-  ```
+```elixir
+def deps do
+  [
+    {:deep_merge, "~> 1.0"}
+  ]
+end
+```
 
 ## General Usage - deep_merge/2
 
@@ -50,7 +61,7 @@ It is worth noting that structs are not deeply merged - not with each other and 
 
 What is merged and how is defined by implementing the `DeepMerge.Resolver` protocol. This library implements it for `Map`, `List` and falls back to `Any` (where the right hand side value/override is taken).
 
-If you want your own struct to be deeply merged you can simply `@derive` the protocole:
+If you want your own struct to be deeply merged you can simply `@derive` the protocol:
 
 ```elixir
 defmodule Derived do
@@ -98,7 +109,7 @@ iex> DeepMerge.deep_merge(%{a: %{b: 1}, c: [d: 1]},
 %{a: %{b: 1, z: 5}, c: [x: 0]}
 ```
 
-This function is called for a given merge conflict with the key where it occured and the two conflicting values. Whatever value is returned in this function is inserted at that point in the structure - unless `DeepMerge.continue_deep_merge` is returned in which case the deep merge continues as normal.
+This function is called for a given merge conflict with the key where it occurred and the two conflicting values. Whatever value is returned in this function is inserted at that point in the structure - unless `DeepMerge.continue_deep_merge` is returned in which case the deep merge continues as normal.
 
 When would you want to use this versus a protocol? The best use case I can think of is when you want to alter behavior for which a protocol is already implemented or if you care about specific keys.
 
@@ -111,7 +122,7 @@ Well not necessarily, no. There are [very simple implementations for maps that u
 There are subtle things that can be missed there though (and I missed the first time around):
 
 * the most simple implementation also merges structs which is not always what you want
-* For keyword lists on the other hand you gotta be careful that you don't accidentally merge keyword lists with lists as that's [currently possible](https://github.com/elixir-lang/elixir/issues/5395)
+* for keyword lists on the other hand you gotta be careful that you don't accidentally merge keyword lists with lists as that's [currently possible](https://github.com/elixir-lang/elixir/issues/5395)
 * you might want to further adopt the implementation, in [benchee](https://github.com/bencheeorg/benchee) we have 2 custom implementations of the protocol due to our needs
 
 This library takes care of those problems and will take care of further problems/edge cases should they appear so you can focus on your business logic.
@@ -120,10 +131,17 @@ At the same time it offers extension mechanisms through protocols and a function
 
 ## Performance
 
-You can check out [a benchmark and its results](https://github.com/PragTob/deep_merge/blob/master/benches/bench/deep_merge.exs).
+You can check out [a benchmark and its results](https://github.com/PragTob/deep_merge/blob/main/benches/bench/deep_merge.exs).
 
 The TLDR; is this: In the sample it is about 30 times slower than `Map.merge/2` - however, less than twice as slow as calling `Map.merge/3` with simple overriding behaviour (same behaviour as `Map.merge/2`). This is because `Map.merge/2` is highly optimized, but we need to do much more than the `Map.merge/3` sample in the benchmark so I think it's a very passable result. We're still talking about a couple of μs.
 
 ## Considered feature-complete
 
 Unless you come with great feature ideas of course ;) So if you come here and there are no recent commits, don't worry - there are no known bugs or whatever. It's a small little library that does its job.
+
+## Copyright and License
+
+Copyright (c) 2016 Tobias Pfeiffer
+
+This library is MIT licensed. See the
+[LICENSE](https://github.com/PragTob/deep_merge/blob/main/LICENSE.txt) for details.
