@@ -1,0 +1,139 @@
+name: CI
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+on: [pull_request, push]
+
+jobs:
+  linux:
+    name: Test on Ubuntu (Elixir ${{ matrix.elixir_version }}, OTP ${{ matrix.otp_version }})
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        # Thoroughly check the most recent versions
+        elixir_version: ['1.13.4', '1.14.5', '1.15.7', '1.16.0-rc.0']
+        otp_version: ['23.3', '24.3', '25.3', '26.1']
+        # Spot check older versions
+        #
+        # Goal is to have old versions (elixir and erlang) have basically one test each.
+        # That should be enough to affirm that they are working ok.
+        include:
+          - elixir_version: '1.7.4'
+            otp_version: '20.3'
+          - elixir_version: '1.8.2'
+            otp_version: '20.3'
+          - elixir_version: '1.9.4'
+            otp_version: '21.3'
+          - elixir_version: '1.10.4'
+            otp_version: '21.3'
+          - elixir_version: '1.11.4'
+            otp_version: '22.3'
+          - elixir_version: '1.12.3'
+            otp_version: '23.3'
+          - elixir_version: '1.13.4'
+            otp_version: '22.3'
+        exclude:
+          - elixir_version: '1.15.7'
+            otp_version: '23.3'
+          - elixir_version: '1.16.0-rc.0'
+            otp_version: '23.3'
+          - elixir_version: '1.13.4'
+            otp_version: '26.1'
+          - elixir_version: '1.14.5'
+            otp_version: '26.1'
+
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Setup Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: ${{ matrix.elixir_version }}
+          otp-version: ${{ matrix.otp_version }}
+      - name: Restore deps and _build
+        uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: erlef-${{ runner.os }}-mix-${{ matrix.elixir_version }}-${{ matrix.otp_version }}-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+      - name: Restore plts
+        uses: actions/cache@v3
+        with:
+          path: tools/plts
+          key: erlef-${{ runner.os }}-dialyzer-${{ matrix.elixir_version }}-${{ matrix.otp_version }}-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+        if: contains(matrix.elixir_version, '1.15')
+      - run: mix deps.get
+      - run: MIX_ENV=test mix compile --warnings-as-errors
+      - run: mix credo
+        if: contains(matrix.elixir_version, '1.15')
+      - name: Check if formatted
+        if: contains(matrix.elixir_version, '1.15')
+        run: mix format --check-formatted
+      - name: Actual Tests
+        # this will let warnings slip through but I don't wanna replicate all that magic
+        # right now
+        run: MIX_ENV=test mix coveralls.github || mix test --failed
+        # Apparently the one with `!` can't go without the fancy expression syntax
+        if: ${{ !contains(matrix.elixir_version, '1.15') }}
+      - name: Actual Tests WITH warnings as errors
+        run: MIX_ENV=test mix coveralls.github --warnings-as-errors || mix test --failed
+        if: contains(matrix.elixir_version, '1.15')
+      - name: Dialyzer
+        run: mix dialyzer --halt-exit-status
+        if: contains(matrix.elixir_version, '1.15')
+
+  macos:
+    name: Test on MacOS
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        # no versioning on brew but getting asdf or something was a bigger headache
+      - name: Install Elixir
+        run: brew install elixir
+      - name: Restore deps and _build
+        uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
+      - run: mix local.hex --force
+      - run: mix deps.get
+      - run: mix local.rebar --force
+      - run: MIX_ENV=test mix compile --warnings-as-errors
+      - run: mix test || mix test --failed
+
+  windows:
+    name: Test on Windows
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Restore chocolatey
+        uses: actions/cache@v3
+        with:
+          path: C:\Users\runneradmin\AppData\Local\Temp\chocolatey
+          key: ${{ runner.os }}-chocolatey-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-chocolatey-
+      - name: Install Elixir
+        run: |
+          choco install elixir --version=1.14.2 --no-progress
+          set MIX_ENV=test
+          echo "C:\ProgramData\chocolatey\lib\Elixir\bin;C:\ProgramData\chocolatey\bin;C:\ProgramData\chocolatey\lib\Elixir\tools\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+      - name: Build
+        run: |
+          echo "$PATH"
+          mix local.hex --force
+          mix deps.get
+          mix local.rebar --force
+          mix compile --warnings-as-errors
+      - name: Test
+        run: mix test || mix test --failed
