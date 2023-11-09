@@ -25,7 +25,7 @@ defmodule DeepMerge.Mixfile do
       name: "deep_merge",
       source_url: "https://github.com/PragTob/deep_merge",
       dialyzer: [
-        flags: [:unmatched_returns, :error_handling, :race_conditions, :underspecs],
+        flags: [:error_handling, :underspecs],
         ignore_warnings: ".dialyzer_ignore.exs",
         list_unused_filters: true
       ],
