@@ -91,7 +91,7 @@ defmodule DeepMerge do
       ...> %{a: %{z: 5}, c: [x: 0]}, resolver)
       %{a: %{b: 1, z: 5}, c: [x: 0]}
   """
-  @spec deep_merge(map() | keyword(), map() | keyword(), (any(), any() -> any())) ::
+  @spec deep_merge(map() | keyword(), map() | keyword(), (any(), any(), any() -> any())) ::
           map() | keyword()
   def deep_merge(original, override, resolve_function)
       when (is_map(original) or is_list(original)) and (is_map(override) or is_list(override)) do
@@ -111,7 +111,7 @@ defmodule DeepMerge do
   @spec continue_deep_merge() :: :__deep_merge_continue
   def continue_deep_merge, do: @continue_symbol
 
-  @spec build_resolver((any(), any() -> any())) :: (any(), any(), any() -> any())
+  @spec build_resolver((any(), any(), any() -> any())) :: (any(), any(), any() -> any())
   defp build_resolver(resolve_function) do
     my_resolver = fn key, base, override, fun ->
       resolved_value = resolve_function.(key, base, override)
