@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.0.1 (2026-06-04)
+
+### Bugfixes
+* Fixed a wrong type spec, thanks [martinmaillard](https://github.com/martinmaillard)
+
+### Documentation
+* broad sweep improvement of docs, thanks [kianmeng](https://github.com/kianmeng)
+
 ## 1.0.0 (2019-03-26)
 
 * Added the possibility to `@derive [DeepMerge.Resolver]` if you want your custom structs to also easily be deep_mergeable
