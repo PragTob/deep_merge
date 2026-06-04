@@ -27,7 +27,6 @@ defmodule DeepMerge.Mixfile do
         list_unused_filters: true
       ],
       preferred_cli_env: [
-        docs: :docs,
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
@@ -47,9 +46,9 @@ defmodule DeepMerge.Mixfile do
   defp deps do
     [
       {:credo, "~> 1.0", only: :dev},
-      {:ex_doc, ">= 0.0.0", only: :docs, runtime: false},
+      {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
       {:excoveralls, "~> 0.7", only: :test},
-      {:inch_ex, "~> 2.0", only: :docs},
+      {:inch_ex, "~> 2.0", only: :dev},
       {:dialyxir, "~> 1.0", only: [:dev], runtime: false}
     ]
   end
