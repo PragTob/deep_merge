@@ -24,3 +24,6 @@ deep_merge-*.tar
 
 # Temporary files for e.g. tests.
 /tmp/
+
+# let's let people use the versions they want
+.tool-versions
