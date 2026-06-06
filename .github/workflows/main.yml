@@ -78,7 +78,7 @@ jobs:
       - name: Actual Tests
         # this will let warnings slip through but I don't wanna replicate all that magic
         # right now
-        run: MIX_ENV=test mix coveralls.github || mix test --failed
+        run: MIX_ENV=test mix coveralls.github --warnings-as-errors || mix test --failed
         # Apparently the one with `!` can't go without the fancy expression syntax
         if: ${{ !matrix.lint }}
         # warnings as errors is a form of linting!
