@@ -126,6 +126,11 @@ You can check out [a benchmark and its results](https://github.com/PragTob/deep_
 
 The TLDR; is this: In the sample it is about 30 times slower than `Map.merge/2` - however, less than twice as slow as calling `Map.merge/3` with simple overriding behaviour (same behaviour as `Map.merge/2`). This is because `Map.merge/2` is highly optimized, but we need to do much more than the `Map.merge/3` sample in the benchmark so I think it's a very passable result. We're still talking about a couple of μs.
 
+## Development
+
+The tests emit type warnings right now on elixir 1.20+.
+These tests are actively exercising behavior with unmatching types, so... kinda expected.
+
 ## Considered feature-complete
 
 Unless you come with great feature ideas of course ;) So if you come here and there are no recent commits, don't worry - there are no known bugs or whatever. It's a small little library that does its job.
