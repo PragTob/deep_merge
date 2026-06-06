@@ -98,10 +98,18 @@ defimpl DeepMerge.Resolver, for: Any do
   implement the protocol are deeply merged.
   """
   def resolve(original = %{__struct__: struct}, override = %{__struct__: struct}, resolver) do
-    if DeepMerge.Resolver.impl_for(original) == DeepMerge.Resolver.Any do
-      override
-    else
+    impl_module = Module.concat(DeepMerge.Resolver, struct)
+
+    # We check for the existence of the generated implementation module rather than using
+    # `impl_for/1`, because on Elixir < 1.15 `impl_for` returns `DeepMerge.Resolver.Any`
+    # for derived structs (consolidation inlines the Any delegation), making it impossible
+    # to distinguish "opted in via @derive" from "no implementation, falling back to Any".
+    # The generated module (e.g. `DeepMerge.Resolver.Derived`) always exists when @derive
+    # is used and always defines `__impl__/1`, regardless of version or consolidation state.
+    if function_exported?(impl_module, :__impl__, 1) do
       Map.merge(original, override, resolver)
+    else
+      override
     end
   end
 
