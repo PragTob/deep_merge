@@ -2,7 +2,7 @@ defmodule DeepMerge.Mixfile do
   use Mix.Project
 
   @source_url "https://github.com/PragTob/deep_merge"
-  @version "1.0.1"
+  @version "1.0.2"
 
   def project do
     [
