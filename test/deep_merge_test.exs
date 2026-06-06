@@ -3,6 +3,11 @@ defmodule DeepMergeTest do
   doctest DeepMerge
   import DeepMerge
 
+  # Elixir 1.20 introduced stricter type checking that emits warnings when
+  # intentionally incompatible types are passed, so we skip those tests there.
+  # Errors are omitted on compilation already, so we need to never compile them.
+  @skip_incompatible_type_tests Version.match?(System.version(), ">= 1.20.0")
+
   test "with different keyword list & list combinations" do
     assert deep_merge([a: [b: []], f: 5], a: [b: [c: 2]]) == [f: 5, a: [b: [c: 2]]]
 
@@ -87,11 +92,13 @@ defmodule DeepMergeTest do
       assert deep_merge([b: 2], %{a: 1}) == %{a: 1}
     end
 
-    test "errors out with incompatible types" do
-      assert_incompatible(fn -> deep_merge(%{a: 1}, 2) end)
-      assert_incompatible(fn -> deep_merge(2, %{b: 2}) end)
-      assert_incompatible(fn -> deep_merge(1, 2) end)
-      assert_incompatible(fn -> deep_merge(:atom, :other_atom) end)
+    if not @skip_incompatible_type_tests do
+      test "errors out with incompatible types" do
+        assert_incompatible(fn -> deep_merge(%{a: 1}, 2) end)
+        assert_incompatible(fn -> deep_merge(2, %{b: 2}) end)
+        assert_incompatible(fn -> deep_merge(1, 2) end)
+        assert_incompatible(fn -> deep_merge(:atom, :other_atom) end)
+      end
     end
   end
 
@@ -138,15 +145,19 @@ defmodule DeepMergeTest do
       assert deep_merge([b: 2], %{a: 1}, number_adder()) == %{a: 1}
     end
 
-    test "errors out with incompatible types" do
-      assert_incompatible(fn -> deep_merge(%{a: 1}, 2, number_adder()) end)
-      assert_incompatible(fn -> deep_merge(2, %{b: 2}, number_adder()) end)
-      assert_incompatible(fn -> deep_merge(1, 2, number_adder()) end)
-      assert_incompatible(fn -> deep_merge(:atom, :other_atom, number_adder()) end)
+    if not @skip_incompatible_type_tests do
+      test "errors out with incompatible types" do
+        assert_incompatible(fn -> deep_merge(%{a: 1}, 2, number_adder()) end)
+        assert_incompatible(fn -> deep_merge(2, %{b: 2}, number_adder()) end)
+        assert_incompatible(fn -> deep_merge(1, 2, number_adder()) end)
+        assert_incompatible(fn -> deep_merge(:atom, :other_atom, number_adder()) end)
+      end
     end
   end
 
-  defp assert_incompatible(function) do
-    assert_raise FunctionClauseError, function
+  if not @skip_incompatible_type_tests do
+    defp assert_incompatible(function) do
+      assert_raise FunctionClauseError, function
+    end
   end
 end
