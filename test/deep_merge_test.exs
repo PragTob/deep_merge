@@ -86,6 +86,13 @@ defmodule DeepMergeTest do
       assert deep_merge(%{a: 1}, b: 2) == [b: 2]
       assert deep_merge([b: 2], %{a: 1}) == %{a: 1}
     end
+
+    test "errors out with incompatible types" do
+      assert_incompatible(fn -> deep_merge(%{a: 1}, 2) end)
+      assert_incompatible(fn -> deep_merge(2, %{b: 2}) end)
+      assert_incompatible(fn -> deep_merge(1, 2) end)
+      assert_incompatible(fn -> deep_merge(:atom, :other_atom) end)
+    end
   end
 
   describe ".deep_merge/3" do
@@ -130,5 +137,16 @@ defmodule DeepMergeTest do
       assert deep_merge(%{a: 1}, [b: 2], number_adder()) == [b: 2]
       assert deep_merge([b: 2], %{a: 1}, number_adder()) == %{a: 1}
     end
+
+    test "errors out with incompatible types" do
+      assert_incompatible(fn -> deep_merge(%{a: 1}, 2, number_adder()) end)
+      assert_incompatible(fn -> deep_merge(2, %{b: 2}, number_adder()) end)
+      assert_incompatible(fn -> deep_merge(1, 2, number_adder()) end)
+      assert_incompatible(fn -> deep_merge(:atom, :other_atom, number_adder()) end)
+    end
+  end
+
+  defp assert_incompatible(function) do
+    assert_raise FunctionClauseError, function
   end
 end
