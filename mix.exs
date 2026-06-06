@@ -25,8 +25,13 @@ defmodule DeepMerge.Mixfile do
         flags: [:error_handling, :underspecs],
         ignore_warnings: ".dialyzer_ignore.exs",
         list_unused_filters: true
-      ],
-      preferred_cli_env: [
+      ]
+    ]
+  end
+
+  def cli do
+    [
+      preferred_envs: [
         coveralls: :test,
         "coveralls.detail": :test,
         "coveralls.post": :test,
